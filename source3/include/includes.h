@@ -244,7 +244,7 @@ enum timestamp_set_resolution {
 */
 
 #ifndef FSTRING_LEN
-#define FSTRING_LEN 256
+#define FSTRING_LEN 512
 typedef char fstring[FSTRING_LEN];
 #endif
 

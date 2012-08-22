@@ -43,7 +43,7 @@
    result of some silly looking redeclaration of structures. */
 
 #ifndef FSTRING_LEN
-#define FSTRING_LEN 256
+#define FSTRING_LEN 512
 typedef char fstring[FSTRING_LEN];
 #ifndef fstrcpy
 #define fstrcpy(d,s) \
