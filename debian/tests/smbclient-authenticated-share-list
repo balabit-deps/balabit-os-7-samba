@@ -1,0 +1,8 @@
+#!/bin/sh -x
+
+echo "secret\nsecret" | smbpasswd -s -a ubuntu
+echo "Testing with incorrect password: must fail"
+smbclient -L localhost -U ubuntu%wrongpass && exit 1
+echo "Testing with correct password: must work"
+smbclient -L localhost -U ubuntu%secret
+

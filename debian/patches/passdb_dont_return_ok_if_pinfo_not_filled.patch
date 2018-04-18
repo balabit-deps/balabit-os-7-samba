@@ -1,0 +1,36 @@
+From 8fb23665ddad8f65a6461c310ed5680d104fd9bf Mon Sep 17 00:00:00 2001
+From: Andreas Schneider <asn@samba.org>
+Date: Tue, 17 Apr 2018 08:55:23 +0200
+Subject: [PATCH] s3:passdb: Do not return OK if we don't have pinfo set up
+
+This prevents a crash in fill_mem_keytab_from_secrets()
+
+BUG: https://bugzilla.samba.org/show_bug.cgi?id=13376
+
+Signed-off-by: Andreas Schneider <asn@samba.org>
+Reviewed-by: Stefan Metzmacher <metze@samba.org>
+
+(cherry picked from commit 99859479fc6e12b2f74ce2dfa83da56d8b8f3d26)
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/samba/+bug/1761737
+Origin: https://attachments.samba.org/attachment.cgi?id=14159
+Last-Update: 2018-04-19
+---
+ source3/passdb/machine_account_secrets.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/source3/passdb/machine_account_secrets.c b/source3/passdb/machine_account_secrets.c
+index 75f31cb04e2..d36fa268a4b 100644
+--- a/source3/passdb/machine_account_secrets.c
++++ b/source3/passdb/machine_account_secrets.c
+@@ -1317,7 +1317,7 @@ NTSTATUS secrets_fetch_or_upgrade_domain_info(const char *domain,
+ 
+ 	last_set_time = secrets_fetch_pass_last_set_time(domain);
+ 	if (last_set_time == 0) {
+-		return NT_STATUS_OK;
++		return NT_STATUS_CANT_ACCESS_DOMAIN_INFO;
+ 	}
+ 	unix_to_nt_time(&last_set_nt, last_set_time);
+ 
+-- 
+2.16.3
+

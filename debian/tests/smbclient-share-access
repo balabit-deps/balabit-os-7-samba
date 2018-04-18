@@ -1,0 +1,30 @@
+#!/bin/sh -x
+
+if ! testparm -s 2>&1 | grep -qE "^\[homes\]"; then
+    echo "Adding [homes] share"
+	cat >> /etc/samba/smb.conf <<EOFEOF
+[homes]
+  valid users = %S
+  read only = no
+  guest ok = no
+EOFEOF
+	systemctl reload smbd.service
+else
+    echo "No need to add [homes] share, continuing."
+fi
+
+echo "Setting password for the ubuntu user"
+echo "secret\nsecret" | smbpasswd -s -a ubuntu
+
+echo "Creating file with random data and computing its md5"
+dd if=/dev/urandom bs=1 count=128 2>/dev/null | base64 > /home/ubuntu/data
+chown ubuntu:ubuntu /home/ubuntu/data
+cd /home/ubuntu
+md5sum data > data.md5
+
+rm -f downloaded-data
+echo "Downloading file and comparing its md5"
+smbclient //localhost/ubuntu -U ubuntu%secret -c "get data downloaded-data"
+
+mv -f downloaded-data data
+md5sum -c data.md5

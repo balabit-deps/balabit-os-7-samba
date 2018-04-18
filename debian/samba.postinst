@@ -1,0 +1,66 @@
+#!/bin/sh
+#
+# Post-installation script for the Samba package for Debian GNU/Linux
+#
+#
+
+set -e
+
+# We generate several files during the postinst, and we don't want
+#	them to be readable only by root.
+umask 022
+
+# add the sambashare group
+if ! getent group sambashare > /dev/null 2>&1
+then
+	addgroup --system sambashare
+	# Only on Ubuntu, use the "admin" group as a template for the
+	# initial users for this group; Debian has no equivalent group,
+	# so leaving the sambashare group empty is the more secure default
+	if [ -x "`which lsb_release 2>/dev/null`" ] \
+	   && [ "`lsb_release -s -i`" = "Ubuntu" ]
+	then
+		OLDIFS="$IFS"
+		IFS=","
+		for USER in `getent group admin | cut -f4 -d:`; do
+			adduser "$USER" sambashare \
+			|| ! getent passwd "$USER" >/dev/null
+		done
+		IFS="$OLDIFS"
+	fi
+fi
+
+if [ ! -e /var/lib/samba/usershares ]
+then
+	install -d -m 1770 -g sambashare /var/lib/samba/usershares
+fi
+
+# mimic source4/smbd/server.c and mask service before it fails
+SERVER_ROLE=`samba-tool testparm --parameter-name="server role"  2>/dev/null | tail -1`
+SERVER_SERVICES=`samba-tool testparm --parameter-name="server services"  2>/dev/null | tail -1`
+DCERPC_ENDPOINT_SERVERS=`samba-tool testparm --parameter-name="dcerpc endpoint servers"  2>/dev/null | tail -1`
+if [ "$SERVER_ROLE" != "active directory domain controller" ] \
+        && ( echo "$SERVER_SERVICES" | grep -qv '\(^\|, \)smb\(,\|$\)' ) \
+        && ( echo "$DCERPC_ENDPOINT_SERVERS" | grep -qv '\(^\|, \)remote\(,\|$\)' ) \
+        && ( echo "$DCERPC_ENDPOINT_SERVERS" | grep -qv '\(^\|, \)mapiproxy\(,\|$\)' ) \
+; then
+    if [ ! -e /etc/systemd/system/samba-ad-dc.service ]; then
+        mkdir -p /etc/systemd/system
+        echo "Samba is not being run as an AD Domain Controller, masking samba-ad-dc.service."
+        echo "Please ignore the following error about deb-systemd-helper not finding samba-ad-dc.service."
+        ln -s /dev/null /etc/systemd/system/samba-ad-dc.service
+        # In case this system is running systemd, we make systemd reload the unit files
+        # to pick up changes.
+        if [ -d /run/systemd/system ] ; then
+            systemctl --system daemon-reload >/dev/null || true
+        fi
+    elif [ -h /etc/systemd/system/samba-ad-dc.service ] \
+        && [ "`realpath /etc/systemd/system/samba-ad-dc.service`" = /dev/null ] \
+    ; then
+        echo "Samba is not being run as an AD Domain Controller."
+        echo "Please ignore the following error about deb-systemd-helper not finding samba-ad-dc.service."
+    fi
+fi
+#DEBHELPER#
+
+exit 0
