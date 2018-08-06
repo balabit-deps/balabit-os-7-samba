@@ -1,3 +1,27 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.2) bionic-security; urgency=medium
+
+  * SECURITY UPDATE: Insufficient input validation on client directory
+    listing in libsmbclient
+    - debian/patches/CVE-2018-10858-*.patch: don't overwrite passed in
+      buffer in source3/libsmb/libsmb_path.c, add checks to
+      source3/libsmb/libsmb_dir.c, source3/libsmb/libsmb_path.c.
+    - CVE-2018-10858
+  * SECURITY UPDATE: Denial of Service Attack on AD DC DRSUAPI server
+    - debian/patches/CVE-2018-10918.patch: fix null pointer dereference in
+      source4/dsdb/samdb/cracknames.c, add test to
+      source4/torture/drs/python/cracknames.py.
+    - CVE-2018-10918
+  * SECURITY UPDATE: Confidential attribute disclosure AD LDAP server
+    - debian/patches/CVE-2018-10919-*.patch: fix access checks and add
+      tests.
+    - CVE-2018-10919
+  * SECURITY UPDATE: Weak authentication protocol allowed
+    - debian/patches/CVE-2018-1139-*.patch: Do not allow ntlmv1 over SMB1
+      and add tests.
+    - CVE-2018-1139
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 06 Aug 2018 07:30:25 -0400
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2) bionic; urgency=medium
 
   * debian/patches/passdb_dont_return_ok_if_pinfo_not_filled.patch:
