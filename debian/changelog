@@ -1,3 +1,9 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.2bb1) bionic; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sun, 19 Aug 2018 04:22:27 +0200
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.2) bionic-security; urgency=medium
 
   * SECURITY UPDATE: Insufficient input validation on client directory
