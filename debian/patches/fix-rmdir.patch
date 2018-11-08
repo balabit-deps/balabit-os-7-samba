@@ -1,0 +1,45 @@
+Description: Explicitly set delete_on_close token for rmdir
+ The current implementation of `rmdir` hopes to get the directory deleted
+ on closing last open handle when FILE_DELETE_ON_CLOSE is set on it. But
+ for non-empty directories Windows doesn't error out during an open call.
+ Following that we internally refuse to set initial delete_on_close while
+ opening a non-empty directory. This prevents us from trying to delete
+ the directory when last open handle is closed.
+ .
+ Instead of relying on FILE_DELETE_ON_CLOSE during an open we explicitly
+ set delete_on_close token on directory handle once it is available. This
+ ensures that NT_STATUS_DIRECTORY_NOT_EMPTY is returned for `rmdir` on
+ non-empty directories while closing open directory handle.
+Author: Anoop C S <anoopcs@redhat.com>
+Origin: upstream, https://github.com/samba-team/samba/commit/6b68e3eca631c04d6d57c489daf60f64732fc86d
+Bug: https://bugzilla.samba.org/show_bug.cgi?id=13204
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/samba/+bug/1795772
+Last-Update: 2018-11-08
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+diff --git a/source3/libsmb/cli_smb2_fnum.c b/source3/libsmb/cli_smb2_fnum.c
+index 237e6bb2b..d4ff8bd28 100644
+--- a/source3/libsmb/cli_smb2_fnum.c
++++ b/source3/libsmb/cli_smb2_fnum.c
+@@ -682,13 +682,20 @@ NTSTATUS cli_smb2_rmdir(struct cli_state *cli, const char *dname)
+ 			FILE_ATTRIBUTE_DIRECTORY, /* file attributes */
+ 			FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, /* share_access */
+ 			FILE_OPEN,		/* create_disposition */
+-			FILE_DIRECTORY_FILE|FILE_DELETE_ON_CLOSE,	/* create_options */
++			FILE_DIRECTORY_FILE,	/* create_options */
+ 			&fnum,
+ 			NULL);
+ 
+ 	if (!NT_STATUS_IS_OK(status)) {
+ 		return status;
+ 	}
++
++	status = cli_smb2_delete_on_close(cli, fnum, true);
++	if (!NT_STATUS_IS_OK(status)) {
++		cli_smb2_close_fnum(cli, fnum);
++		return status;
++	}
++
+ 	return cli_smb2_close_fnum(cli, fnum);
+ }
+ 

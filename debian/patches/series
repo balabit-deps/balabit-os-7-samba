@@ -32,3 +32,4 @@ CVE-2018-1139-3.patch
 CVE-2018-1139-4.patch
 CVE-2018-1139-5.patch
 CVE-2018-1139-6.patch
+fix-rmdir.patch
