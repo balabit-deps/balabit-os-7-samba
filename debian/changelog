@@ -1,3 +1,24 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.5) bionic-security; urgency=medium
+
+  * SECURITY UPDATE: Unprivileged adding of CNAME record causing loop in AD
+    Internal DNS server
+    - debian/patches/CVE-2018-14629.patch: add CNAME loop prevention using
+      counter in python/samba/tests/dns.py, selftest/knownfail.d/dns,
+      source4/dns_server/dns_query.c.
+    - CVE-2018-14629
+  * SECURITY UPDATE: Double-free in Samba AD DC KDC with PKINIT
+    - debian/patches/CVE-2018-16841-1.patch: fix segfault on PKINIT with
+      mis-matching principal in source4/kdc/db-glue.c.
+    - debian/patches/CVE-2018-16841-2.patch: check for mismatching
+      principal in testprogs/blackbox/test_pkinit_heimdal.sh.
+    - CVE-2018-16841
+  * SECURITY UPDATE: NULL pointer de-reference in Samba AD DC LDAP server
+    - debian/patches/CVE-2018-16851.patch: check ret before manipulating
+      blob in source4/ldap_server/ldap_server.c.
+    - CVE-2018-16851
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 16 Nov 2018 08:19:35 -0500
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.4) bionic; urgency=medium
 
   * d/p/fix-rmdir.patch: fix the patch to not apply with offset, which
