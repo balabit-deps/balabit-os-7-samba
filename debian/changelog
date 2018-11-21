@@ -1,3 +1,9 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.4bb1) bionic; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Wed, 21 Nov 2018 09:18:41 +0100
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.4) bionic; urgency=medium
 
   * d/p/fix-rmdir.patch: fix the patch to not apply with offset, which
