@@ -1,3 +1,18 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.4) bionic; urgency=medium
+
+  * d/p/fix-rmdir.patch: fix the patch to not apply with offset, which
+    previously made it change the wrong, almost identical, function.
+    (LP: #1795772)
+
+ -- Andreas Hasenack <andreas@canonical.com>  Thu, 08 Nov 2018 16:09:36 -0200
+
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.3) bionic; urgency=medium
+
+  * d/p/fix-rmdir.patch: Fix to make smbclient report directory-not-empty
+    errors (LP: #1795772)
+
+ -- Andreas Hasenack <andreas@canonical.com>  Thu, 11 Oct 2018 16:21:16 -0300
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.2bb1) bionic; urgency=medium
 
   * Balabit patched version
