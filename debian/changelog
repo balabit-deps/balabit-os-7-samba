@@ -1,3 +1,10 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.6) bionic; urgency=medium
+
+  * d/p/auth-fail-eexist.diff: smbc_opendir should not return EEXIST with
+    invalid login credentials. Thanks to David Mulder. (LP: #1801227)
+
+ -- Karl Stenerud <karl.stenerud@canonical.com>  Fri, 23 Nov 2018 15:58:41 +0100
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.5) bionic-security; urgency=medium
 
   * SECURITY UPDATE: Unprivileged adding of CNAME record causing loop in AD

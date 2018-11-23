@@ -1,0 +1,32 @@
+Description: smbc_opendir should not return EEXIST with invalid login credentials.
+Author: David Mulder <dmulder@suse.com>
+Origin: upstream, https://github.com/samba-team/samba/commit/7470b9b18af282a742929d3fc90f4be5520428a1
+Bug: https://bugzilla.samba.org/show_bug.cgi?id=13050
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/bionic/+source/samba/+bug/1801227
+Last-Update: 2018-11-28
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+diff --git a/source3/libsmb/libsmb_server.c b/source3/libsmb/libsmb_server.c
+index 2d41f2fac..e6067be20 100644
+--- a/source3/libsmb/libsmb_server.c
++++ b/source3/libsmb/libsmb_server.c
+@@ -360,8 +360,8 @@ SMBC_server_internal(TALLOC_CTX *ctx,
+ 						  "?????",
+ 						  *pp_password);
+ 			if (!NT_STATUS_IS_OK(status)) {
+-                                errno = map_errno_from_nt_status(status);
+                                 cli_shutdown(srv->cli);
++                                errno = map_errno_from_nt_status(status);
+ 				srv->cli = NULL;
+                                 smbc_getFunctionRemoveCachedServer(context)(context,
+                                                                             srv);
+@@ -571,8 +571,8 @@ SMBC_server_internal(TALLOC_CTX *ctx,
+ 
+ 	status = cli_tree_connect_creds(c, share, "?????", creds);
+ 	if (!NT_STATUS_IS_OK(status)) {
+-		errno = map_errno_from_nt_status(status);
+ 		cli_shutdown(c);
++		errno = map_errno_from_nt_status(status);
+ 		return NULL;
+ 	}
+ 
