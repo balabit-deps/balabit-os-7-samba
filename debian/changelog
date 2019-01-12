@@ -1,3 +1,9 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.6bb1) bionic; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 12 Jan 2019 04:24:24 +0100
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.6) bionic; urgency=medium
 
   * d/p/auth-fail-eexist.diff: smbc_opendir should not return EEXIST with
