@@ -157,6 +157,7 @@ libsmbclient.so.0 libsmbclient #MINVER#
  smbc_setOptionNoAutoAnonymousLogin@SMBCLIENT_0.1.0 2:4.0.3+dfsg1
  smbc_setOptionOneSharePerServer@SMBCLIENT_0.1.0 2:4.0.3+dfsg1
  smbc_setOptionOpenShareMode@SMBCLIENT_0.1.0 2:4.0.3+dfsg1
+ smbc_setOptionProtocols@SMBCLIENT_0.2.3 2:4.7.6+dfsg~ubuntu-0ubuntu2.8~
  smbc_setOptionSmbEncryptionLevel@SMBCLIENT_0.1.0 2:4.0.3+dfsg1
  smbc_setOptionUrlEncodeReaddirEntries@SMBCLIENT_0.1.0 2:4.0.3+dfsg1
  smbc_setOptionUseCCache@SMBCLIENT_0.1.0 2:4.0.3+dfsg1

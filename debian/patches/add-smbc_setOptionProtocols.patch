@@ -1,0 +1,61 @@
+Description: s3:libsmbclient: Add function to set protocol levels
+Author: Andreas Schneider <asn@samba.org>
+Origin: https://github.com/samba-team/samba/commit/0dae4e2f5c65167fdb2405e232436921a0bb17e6
+Origin: https://github.com/samba-team/samba/commit/885435e8a4dc561749b880f8be7a32041fa954ec
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/samba/+bug/1778322
+Last-Update: 2019-03-28
+--- a/source3/include/libsmbclient.h
++++ b/source3/include/libsmbclient.h
+@@ -775,7 +775,24 @@
+ void
+ smbc_setOptionUseNTHash(SMBCCTX *c, smbc_bool b);
+ 
+-
++/**
++ * @brief Set the 'client min protocol' and the 'client max protocol'.
++ *
++ * IMPORTANT: This overrrides the values 'client min protocol' and 'client max
++ * protocol' set in the smb.conf file!
++ *
++ * @param[in]  c  The smbc context to use.
++ *
++ * @param[in]  min_proto  The minimal protocol to use or NULL for leaving it
++ *                        untouched.
++ *
++ * @param[in]  max_proto  The maximum protocol to use or NULL for leaving it
++ *                        untouched.
++ *
++ * @returns true for success, false otherwise
++ */
++smbc_bool
++smbc_setOptionProtocols(SMBCCTX *c, const char *min_proto, const char *max_proto);
+ 
+ /*************************************
+  * Getters and setters for FUNCTIONS *
+--- a/source3/libsmb/libsmb_setget.c
++++ b/source3/libsmb/libsmb_setget.c
+@@ -503,6 +503,24 @@
+         }
+ }
+ 
++smbc_bool
++smbc_setOptionProtocols(SMBCCTX *c,
++			const char *min_proto,
++			const char *max_proto)
++{
++	bool ok = true;
++
++	if (min_proto != NULL) {
++		ok = lp_set_cmdline("client min protocol", min_proto);
++	}
++
++	if (max_proto != NULL) {
++		ok &= lp_set_cmdline("client max protocol", max_proto);
++	}
++
++	return ok;
++}
++
+ /** Get the function for obtaining authentication data */
+ smbc_get_auth_data_fn
+ smbc_getFunctionAuthData(SMBCCTX *c)
