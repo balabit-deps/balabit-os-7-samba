@@ -1,0 +1,44 @@
+From 461a1172ff819692aa0a2dc5ce7fc5379c8a529e Mon Sep 17 00:00:00 2001
+From: Jeremy Allison <jra@samba.org>
+Date: Fri, 6 Apr 2018 13:52:52 -0700
+Subject: [PATCH] s3: smbd: Fix memory leak in vfswrap_getwd()
+
+BUG: https://bugzilla.samba.org/show_bug.cgi?id=13372
+
+Signed-off-by: Andrew Walker <awalker@ixsystems.com>.
+Reviewed-by: Jeremy Allison <jra@samba.org>
+Reviewed-by: Ralph Boehme <slow@samba.org>
+
+Autobuild-User(master): Jeremy Allison <jra@samba.org>
+Autobuild-Date(master): Mon Apr  9 21:48:12 CEST 2018 on sn-devel-144
+
+Origin: https://gitlab.com/samba-team/samba/commit/461a1172ff819692aa0a2dc5ce7fc5379c8a529e
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/samba/+bug/1814532
+Last-Update: 2019-02-04
+---
+ source3/modules/vfs_default.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/source3/modules/vfs_default.c b/source3/modules/vfs_default.c
+index a26bec457ae..a9c87e444fe 100644
+--- a/source3/modules/vfs_default.c
++++ b/source3/modules/vfs_default.c
+@@ -2229,9 +2229,12 @@ static struct smb_filename *vfswrap_getwd(vfs_handle_struct *handle,
+ 				NULL,
+ 				NULL,
+ 				0);
+-	if (smb_fname == NULL) {
+-		SAFE_FREE(result);
+-	}
++	/*
++	 * sys_getwd() *always* returns malloced memory.
++	 * We must free here to avoid leaks:
++	 * BUG:https://bugzilla.samba.org/show_bug.cgi?id=13372
++	 */
++	SAFE_FREE(result);
+ 	return smb_fname;
+ }
+ 
+-- 
+2.18.1
+
