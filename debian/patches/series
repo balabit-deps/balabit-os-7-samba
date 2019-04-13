@@ -39,3 +39,5 @@ CVE-2018-16841-2.patch
 CVE-2018-16851.patch
 auth-fail-eexist.diff
 memleak-fix-13372.patch
+add-smbc_setOptionProtocols.patch
+CVE-2019-3880.patch

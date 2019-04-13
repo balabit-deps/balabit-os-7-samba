@@ -1,3 +1,21 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.9) bionic-security; urgency=medium
+
+  * SECURITY UPDATE: save registry file outside share as unprivileged user
+    - debian/patches/CVE-2019-3880.patch: remove implementations of
+      SaveKey/RestoreKey in source3/rpc_server/winreg/srv_winreg_nt.c.
+    - CVE-2019-3880
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 04 Apr 2019 14:05:56 -0400
+
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.8) bionic; urgency=medium
+
+  * Backport function to set protocol levels (LP: #1778322):
+    - d/p/add-smbc_setOptionProtocols.patch: add function to set protocol
+      levels
+    - d/libsmbclient.symbols: add smbc_setOptionProtocols
+
+ -- Andreas Hasenack <andreas@canonical.com>  Fri, 29 Mar 2019 16:45:27 -0300
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.7bb1) bionic; urgency=medium
 
   * Balabit patched version
