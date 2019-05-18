@@ -1,3 +1,16 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.10) bionic-security; urgency=medium
+
+  * SECURITY UPDATE: Samba AD DC S4U2Self/S4U2Proxy unkeyed checksum
+    - debian/patches/CVE-2018-16860-1.patch: add test for S4U2Self with
+      unkeyed checksum in selftest/knownfail.d/mitm-s4u2self,
+      source4/torture/krb5/kdc-canon-heimdal.c.
+    - debian/patches/CVE-2018-16860-2.patch: reject PA-S4U2Self with
+      unkeyed checksum in selftest/knownfail.d/mitm-s4u2self,
+      source4/heimdal/kdc/krb5tgs.c.
+    - CVE-2018-16860
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 08 May 2019 09:42:29 -0400
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.9bb1) bionic; urgency=medium
 
   * Balabit patched version
