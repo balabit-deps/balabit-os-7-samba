@@ -1,3 +1,11 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.11) bionic-security; urgency=medium
+
+  * SECURITY REGRESSION: panics following recent update (LP: #1827924)
+    - debian/patches/bug13315.patch: do not crash if we fail to init the
+      session table in source3/smbd/negprot.c.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 23 May 2019 08:06:42 -0400
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.10) bionic-security; urgency=medium
 
   * SECURITY UPDATE: Samba AD DC S4U2Self/S4U2Proxy unkeyed checksum
