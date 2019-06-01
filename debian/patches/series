@@ -43,3 +43,4 @@ add-smbc_setOptionProtocols.patch
 CVE-2019-3880.patch
 CVE-2018-16860-1.patch
 CVE-2018-16860-2.patch
+bug13315.patch

@@ -1,0 +1,108 @@
+From af47cdb3e1310ba0a365fa2c5b0161b6554fbead Mon Sep 17 00:00:00 2001
+From: Andreas Schneider <asn@samba.org>
+Date: Mon, 19 Feb 2018 18:07:50 +0100
+Subject: [PATCH] s3:smbd: Do not crash if we fail to init the session table
+
+This should the following segfault with SMB1:
+
+  #6  sig_fault (sig=<optimized out>) at ../lib/util/fault.c:94
+  #7  <signal handler called>
+  #8  smbXsrv_session_create (conn=conn@entry=0x5654d3512af0, now=now@entry=131594481900356690, _session=_session@entry=0x7ffc93a778e8)
+      at ../source3/smbd/smbXsrv_session.c:1212
+  #9  0x00007f7618aa21ef in reply_sesssetup_and_X (req=req@entry=0x5654d35174b0) at ../source3/smbd/sesssetup.c:961
+  #10 0x00007f7618ae17b0 in switch_message (type=<optimized out>, req=req@entry=0x5654d35174b0) at ../source3/smbd/process.c:1726
+  #11 0x00007f7618ae3550 in construct_reply (deferred_pcd=0x0, encrypted=false, seqnum=0, unread_bytes=0, size=140, inbuf=0x0, xconn=0x5654d35146d0)
+      at ../source3/smbd/process.c:1762
+  #12 process_smb (xconn=xconn@entry=0x5654d3512af0, inbuf=<optimized out>, nread=140, unread_bytes=0, seqnum=0, encrypted=<optimized out>,
+      deferred_pcd=deferred_pcd@entry=0x0) at ../source3/smbd/process.c:2008
+  #13 0x00007f7618ae4c41 in smbd_server_connection_read_handler (xconn=0x5654d3512af0, fd=40) at ../source3/smbd/process.c:2608
+  #14 0x00007f761587eedb in epoll_event_loop_once () from /lib64/libtevent.so.0
+
+Inspection the core shows that:
+  conn->client-session_table is NULL
+  conn->protocol is PROTOCOL_NONE
+
+BUG: https://bugzilla.samba.org/show_bug.cgi?id=13315
+
+Signed-off-by: Andreas Schneider <asn@samba.org>
+Reviewed-by: Jeremy Allison <jra@samba.org>
+(cherry picked from commit a89a7146563f2d9eb8bc02f1c090158ee499c878)
+
+Autobuild-User(v4-7-test): Stefan Metzmacher <metze@samba.org>
+Autobuild-Date(v4-7-test): Thu Mar  8 17:53:27 CET 2018 on sn-devel-144
+---
+ source3/smbd/negprot.c | 23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/source3/smbd/negprot.c b/source3/smbd/negprot.c
+index d3f4776076f..70249f7b446 100644
+--- a/source3/smbd/negprot.c
++++ b/source3/smbd/negprot.c
+@@ -65,6 +65,8 @@ static void reply_lanman1(struct smb_request *req, uint16_t choice)
+ 	time_t t = time(NULL);
+ 	struct smbXsrv_connection *xconn = req->xconn;
+ 	uint16_t raw;
++	NTSTATUS status;
++
+ 	if (lp_async_smb_echo_handler()) {
+ 		raw = 0;
+ 	} else {
+@@ -88,7 +90,11 @@ static void reply_lanman1(struct smb_request *req, uint16_t choice)
+ 		SSVAL(req->outbuf,smb_vwv11, 8);
+ 	}
+ 
+-	smbXsrv_connection_init_tables(xconn, PROTOCOL_LANMAN1);
++	status = smbXsrv_connection_init_tables(xconn, PROTOCOL_LANMAN1);
++	if (!NT_STATUS_IS_OK(status)) {
++		reply_nterror(req, status);
++		return;
++	}
+ 
+ 	/* Reply, SMBlockread, SMBwritelock supported. */
+ 	SCVAL(req->outbuf,smb_flg, FLAG_REPLY|FLAG_SUPPORT_LOCKREAD);
+@@ -115,6 +121,8 @@ static void reply_lanman2(struct smb_request *req, uint16_t choice)
+ 	time_t t = time(NULL);
+ 	struct smbXsrv_connection *xconn = req->xconn;
+ 	uint16_t raw;
++	NTSTATUS status;
++
+ 	if (lp_async_smb_echo_handler()) {
+ 		raw = 0;
+ 	} else {
+@@ -140,7 +148,11 @@ static void reply_lanman2(struct smb_request *req, uint16_t choice)
+ 		SSVAL(req->outbuf,smb_vwv11, 8);
+ 	}
+ 
+-	smbXsrv_connection_init_tables(xconn, PROTOCOL_LANMAN2);
++	status = smbXsrv_connection_init_tables(xconn, PROTOCOL_LANMAN2);
++	if (!NT_STATUS_IS_OK(status)) {
++		reply_nterror(req, status);
++		return;
++	}
+ 
+ 	/* Reply, SMBlockread, SMBwritelock supported. */
+ 	SCVAL(req->outbuf,smb_flg,FLAG_REPLY|FLAG_SUPPORT_LOCKREAD);
+@@ -260,6 +272,7 @@ static void reply_nt1(struct smb_request *req, uint16_t choice)
+ 	struct smbXsrv_connection *xconn = req->xconn;
+ 	bool signing_desired = false;
+ 	bool signing_required = false;
++	NTSTATUS status;
+ 
+ 	xconn->smb1.negprot.encrypted_passwords = lp_encrypt_passwords();
+ 
+@@ -337,7 +350,11 @@ static void reply_nt1(struct smb_request *req, uint16_t choice)
+ 	SSVAL(req->outbuf,smb_vwv0,choice);
+ 	SCVAL(req->outbuf,smb_vwv1,secword);
+ 
+-	smbXsrv_connection_init_tables(xconn, PROTOCOL_NT1);
++	status = smbXsrv_connection_init_tables(xconn, PROTOCOL_NT1);
++	if (!NT_STATUS_IS_OK(status)) {
++		reply_nterror(req, status);
++		return;
++	}
+ 
+ 	SSVAL(req->outbuf,smb_vwv1+1, lp_max_mux()); /* maxmpx */
+ 	SSVAL(req->outbuf,smb_vwv2+1, 1); /* num vcs */
+-- 
+2.17.1
+
