@@ -1,3 +1,35 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.13) bionic-security; urgency=medium
+
+  * SECURITY UPDATE: client code can return filenames containing path
+    separators
+    - debian/patches/CVE-2019-10218-1.patch: protect SMB1 client code
+      from evil server returned names in source3/libsmb/clilist.c,
+      source3/libsmb/proto.h.
+    - debian/patches/CVE-2019-10218-2.patch: Protect SMB2 client code
+      from evil server returned names in source3/libsmb/cli_smb2_fnum.c.
+    - CVE-2019-10218
+  * SECURITY UPDATE: Samba AD DC check password script does not receive the
+    full password
+    - debian/patches/CVE-2019-14833-1.patch: use utf8 characters in the
+      unacceptable password in selftest/target/Samba4.pm.
+    - debian/patches/CVE-2019-14833-2.patch: send full password to check
+      password script in source4/dsdb/common/util.c.
+    - CVE-2019-14833
+  * SECURITY UPDATE: User with "get changes" permission can crash AD DC
+    LDAP server via dirsync
+    - debian/patches/CVE-2019-14847-1.patch: ensure attrs exist in
+      source4/dsdb/samdb/ldb_modules/dirsync.c.
+    - debian/patches/CVE-2019-14847-2.patch: demonstrate the correct
+      interaction of ranged_results style attributes and dirsync in
+      source4/dsdb/tests/python/dirsync.py.
+    - debian/patches/CVE-2019-14847-3.patch: correct behaviour of
+      ranged_results when combined with dirsync in
+      source4/dsdb/samdb/ldb_modules/dirsync.c,
+      source4/dsdb/samdb/ldb_modules/ranged_results.c.
+    - CVE-2019-14847
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 21 Oct 2019 08:45:35 -0400
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.11) bionic-security; urgency=medium
 
   * SECURITY REGRESSION: panics following recent update (LP: #1827924)
