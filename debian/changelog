@@ -1,3 +1,9 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.13bb1) bionic; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 02 Nov 2019 04:26:10 +0100
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.13) bionic-security; urgency=medium
 
   * SECURITY UPDATE: client code can return filenames containing path
