@@ -1,3 +1,31 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.14) bionic-security; urgency=medium
+
+  * SECURITY UPDATE: Samba AD DC zone-named record Denial of Service in DNS
+    management server
+    - debian/patches/CVE-2019-14861-1.patch: confirm sort behaviour in
+      dcesrv_DnssrvEnumRecords.
+    - debian/patches/CVE-2019-14861-2.patch: remove special case for @ in
+      dns_build_tree().
+    - debian/patches/CVE-2019-14861-3.patch: avoid crash in ldb_qsort() via
+      dcesrv_DnssrvEnumRecords.
+    - debian/patches/CVE-2019-14861-4.patch: test to demonstrate the bug.
+    - debian/patches/CVE-2019-14861-5.patch: reduce flapping in
+      SambaToolDrsTests.test_samba_tool_replicate_local.
+    - CVE-2019-14861
+  * SECURITY UPDATE: DelegationNotAllowed not being enforced in protocol
+    transition on Samba AD DC
+    - debian/patches/CVE-2019-14870-1.patch: add user-sensitive command to
+      set not-delegated flag.
+    - debian/patches/CVE-2019-14870-2.patch: heimdal: add S4U test for
+      delegation_not_allowed.
+    - debian/patches/CVE-2019-14870-3.patch: heimdal: enforce
+      delegation_not_allowed in S4U2Self.
+    - debian/patches/CVE-2019-14870-4.patch: mit-kdc: enforce
+      delegation_not_allowed flag.
+    - CVE-2019-14870
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 29 Nov 2019 08:57:26 -0500
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.13bb1) bionic; urgency=medium
 
   * Balabit patched version
