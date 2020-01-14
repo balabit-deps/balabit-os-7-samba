@@ -1,3 +1,38 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.15) bionic-security; urgency=medium
+
+  * SECURITY UPDATE: replication of ACLs set to inherit down a subtree on
+    AD Directory not automatic
+    - debian/patches/CVE-2019-14902-1.patch: add test for replication of
+      inherited security descriptors.
+    - debian/patches/CVE-2019-14902-2.patch: add test for a special case
+      around replicated renames.
+    - debian/patches/CVE-2019-14902-3.patch: add test to confirm ACL
+      inheritance really happens
+    - debian/patches/CVE-2019-14902-4.patch: explain that
+      descriptor_sd_propagation_recursive() is protected by a transaction.
+    - debian/patches/CVE-2019-14902-5.patch: add comments explaining why SD
+      propagation needs to be done here.
+    - debian/patches/CVE-2019-14902-6.patch: ensure we honour both
+      change->force_self and change->force_children.
+    - debian/patches/CVE-2019-14902-7.patch: schedule SD propagation to a
+      renamed DN.
+    - debian/patches/CVE-2019-14902-8.patch: fix issue where inherited
+      Security Descriptors were not replicated.
+    - debian/patches/CVE-2019-14902-9.patch: set renamed = true (and so do
+      SD inheritance) after any rename.
+    - debian/patches/CVE-2019-14902-10.patch: change basis of descriptor module
+      deferred processing to be GUIDs.
+    - CVE-2019-14902
+  * SECURITY UPDATE: Crash after failed character conversion at log level 3
+    or above
+    - debian/patches/CVE-2019-14907-1.patch: fix Value stored to 'reason'
+      is never read warning.
+    - debian/patches/CVE-2019-14907-2.patch: do not print the failed to
+      convert string into the logs.
+    - CVE-2019-14907
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 14 Jan 2020 11:11:50 -0500
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.14) bionic-security; urgency=medium
 
   * SECURITY UPDATE: Samba AD DC zone-named record Denial of Service in DNS
