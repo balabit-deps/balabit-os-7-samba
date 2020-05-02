@@ -1,3 +1,34 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.16) bionic-security; urgency=medium
+
+  * SECURITY UPDATE: Stack overflow in AD DC LDAP server
+    - debian/patches/CVE-2020-10704-1.patch: add ASN.1 max tree depth in
+      auth/gensec/gensec_util.c, lib/util/asn1.c, lib/util/asn1.h,
+      lib/util/tests/asn1_tests.c, libcli/auth/spnego_parse.c,
+      libcli/cldap/cldap.c, libcli/ldap/ldap_message.c,
+      source3/lib/tldap.c, source3/lib/tldap_util.c,
+      source3/libsmb/clispnego.c, source4/auth/gensec/gensec_krb5.c,
+      source4/ldap_server/ldap_server.c, source4/libcli/ldap/ldap_client.c,
+      source4/libcli/ldap/ldap_controls.c.
+    - debian/patches/CVE-2020-10704-3.patch: check parse tree depth in
+      lib/util/asn1.c.
+    - debian/patches/CVE-2020-10704-6.patch: add max ldap request sizes in
+      docs-xml/smbdotconf/ldap/ldapmaxanonrequest.xml,
+      docs-xml/smbdotconf/ldap/ldapmaxauthrequest.xml,
+      lib/param/loadparm.c, source3/param/loadparm.c.
+    - debian/patches/CVE-2020-10704-7.patch: limit request sizes in
+      source4/ldap_server/ldap_server.c.
+    - debian/patches/CVE-2020-10704-8.patch: add search size limits to
+      ldap_decode in docs-xml/smbdotconf/ldap/ldapmaxsearchrequest.xml,
+      lib/param/loadparm.c, libcli/cldap/cldap.c,
+      libcli/ldap/ldap_message.c, libcli/ldap/ldap_message.h,
+      source3/param/loadparm.c, source4/ldap_server/ldap_server.c,
+      source4/libcli/ldap/ldap_client.c.
+    - debian/patches/CVE-2020-10704-9.patch: check search request lengths
+      in lib/util/asn1.c, lib/util/asn1.h, libcli/ldap/ldap_message.c.
+    - CVE-2020-10704
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 22 Apr 2020 11:48:03 -0400
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.15bb1) bionic; urgency=medium
 
   * Balabit patched version
