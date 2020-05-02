@@ -1,3 +1,9 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.16bb1) bionic; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 02 May 2020 04:24:38 +0200
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.16) bionic-security; urgency=medium
 
   * SECURITY UPDATE: Stack overflow in AD DC LDAP server
