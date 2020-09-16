@@ -1,3 +1,15 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.19) bionic-security; urgency=medium
+
+  * SECURITY UPDATE: Unauthenticated domain controller compromise by
+    subverting Netlogon cryptography
+    - debian/patches/CVE-2020-1472-1.patch: switch "client schannel"
+      default to "yes" instead of "auto".
+    - debian/patches/CVE-2020-1472-2.patch: switch "server schannel"
+      default to "yes" instead of "auto".
+    - CVE-2020-1472
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 16 Sep 2020 09:08:55 -0400
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.18) bionic-security; urgency=medium
 
   * SECURITY UPDATE: Empty UDP packet DoS in Samba AD DC nbtd
