@@ -1,0 +1,85 @@
+From 4693cf3d6a3dc94ee3b96142d20ce250554c48f8 Mon Sep 17 00:00:00 2001
+From: Stefan Metzmacher <metze@samba.org>
+Date: Wed, 16 Sep 2020 16:17:29 +0200
+Subject: [PATCH 11/22] CVE-2020-1472(ZeroLogon): libcli/auth: reject weak
+ client challenges in netlogon_creds_server_init()
+
+This implements the note from MS-NRPC 3.1.4.1 Session-Key Negotiation:
+
+ 7. If none of the first 5 bytes of the client challenge is unique, the
+    server MUST fail session-key negotiation without further processing of
+    the following steps.
+
+It lets ./zerologon_tester.py from
+https://github.com/SecuraBV/CVE-2020-1472.git
+report: "Attack failed. Target is probably patched."
+
+BUG: https://bugzilla.samba.org/show_bug.cgi?id=14497
+
+Signed-off-by: Stefan Metzmacher <metze@samba.org>
+
+[dbagnall@samba.org, abartlet@samba.org: wscript_build backport
+differs because 4.10 has no gnutls dependency]
+---
+ libcli/auth/credentials.c | 16 ++++++++++++++++
+ libcli/auth/wscript_build |  2 +-
+ 2 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/libcli/auth/credentials.c b/libcli/auth/credentials.c
+index ddf3b2308b8e..fe4b6781a2f4 100644
+--- a/libcli/auth/credentials.c
++++ b/libcli/auth/credentials.c
+@@ -25,6 +25,7 @@
+ #include "../lib/crypto/crypto.h"
+ #include "libcli/auth/libcli_auth.h"
+ #include "../libcli/security/dom_sid.h"
++#include "lib/util/util_str_escape.h"
+ 
+ 
+ bool netlogon_creds_is_random_challenge(const struct netr_Credential *challenge)
+@@ -454,6 +455,7 @@ struct netlogon_creds_CredentialState *netlogon_creds_server_init(TALLOC_CTX *me
+ {
+ 
+ 	struct netlogon_creds_CredentialState *creds = talloc_zero(mem_ctx, struct netlogon_creds_CredentialState);
++	bool ok;
+ 
+ 	if (!creds) {
+ 		return NULL;
+@@ -466,6 +468,20 @@ struct netlogon_creds_CredentialState *netlogon_creds_server_init(TALLOC_CTX *me
+ 	dump_data_pw("Server chall", server_challenge->data, sizeof(server_challenge->data));
+ 	dump_data_pw("Machine Pass", machine_password->hash, sizeof(machine_password->hash));
+ 
++	ok = netlogon_creds_is_random_challenge(client_challenge);
++	if (!ok) {
++		DBG_WARNING("CVE-2020-1472(ZeroLogon): "
++			    "non-random client challenge rejected for "
++			    "client_account[%s] client_computer_name[%s]\n",
++			    log_escape(mem_ctx, client_account),
++			    log_escape(mem_ctx, client_computer_name));
++		dump_data(DBGLVL_WARNING,
++			  client_challenge->data,
++			  sizeof(client_challenge->data));
++		talloc_free(creds);
++		return NULL;
++	}
++
+ 	creds->computer_name = talloc_strdup(creds, client_computer_name);
+ 	if (!creds->computer_name) {
+ 		talloc_free(creds);
+diff --git a/libcli/auth/wscript_build b/libcli/auth/wscript_build
+index d319d9b879e6..394505d166d9 100644
+--- a/libcli/auth/wscript_build
++++ b/libcli/auth/wscript_build
+@@ -18,7 +18,7 @@ bld.SAMBA_SUBSYSTEM('NTLM_CHECK',
+ 
+ bld.SAMBA_SUBSYSTEM('LIBCLI_AUTH',
+ 	source='credentials.c session.c smbencrypt.c smbdes.c',
+-	public_deps='MSRPC_PARSE',
++	public_deps='MSRPC_PARSE util_str_escape',
+ 	public_headers='credentials.h:domain_credentials.h'
+ 	)
+ 
+-- 
+2.17.1
+
+

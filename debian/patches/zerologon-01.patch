@@ -1,0 +1,65 @@
+From 23a6485fc4a2d5d8c70ce21901b4a7add64a3327 Mon Sep 17 00:00:00 2001
+From: Stefan Metzmacher <metze@samba.org>
+Date: Mon, 27 May 2019 12:38:43 +0200
+Subject: [PATCH 01/22] s4:rpc_server:netlogon: don't require
+ NEG_AUTHENTICATED_RPC in netr_ServerAuthenticate*()
+
+The domain join with VMWare Horizon Quickprep seems to use
+netr_ServerAuthenticate3() with just the NEG_STRONG_KEYS
+(and in addition the NEG_SUPPORTS_AES) just to verify a password.
+
+BUG: https://bugzilla.samba.org/show_bug.cgi?id=13464 (maybe)
+BUG: https://bugzilla.samba.org/show_bug.cgi?id=13949
+
+Signed-off-by: Stefan Metzmacher <metze@samba.org>
+Reviewed-by: Andreas Schneider <asn@samba.org>
+(cherry picked from commit ead9b93ce5c2c67bbdb778232805d6d9e70112fc)
+(cherry picked from commit 3bcaef67d293e034cb985b3f85d698fcda92631a)
+---
+ source4/rpc_server/netlogon/dcerpc_netlogon.c | 15 ---------------
+ 1 file changed, 15 deletions(-)
+
+diff --git a/source4/rpc_server/netlogon/dcerpc_netlogon.c b/source4/rpc_server/netlogon/dcerpc_netlogon.c
+index 768956f04faf..8e52d8782c3a 100644
+--- a/source4/rpc_server/netlogon/dcerpc_netlogon.c
++++ b/source4/rpc_server/netlogon/dcerpc_netlogon.c
+@@ -136,8 +136,6 @@ static NTSTATUS dcesrv_netr_ServerAuthenticate3_helper(
+ 	bool allow_nt4_crypto = lpcfg_allow_nt4_crypto(dce_call->conn->dce_ctx->lp_ctx);
+ 	bool reject_des_client = !allow_nt4_crypto;
+ 	bool reject_md5_client = lpcfg_reject_md5_clients(dce_call->conn->dce_ctx->lp_ctx);
+-	int schannel = lpcfg_server_schannel(dce_call->conn->dce_ctx->lp_ctx);
+-	bool reject_none_rpc = (schannel == true);
+ 
+ 	ZERO_STRUCTP(r->out.return_credentials);
+ 	*r->out.rid = 0;
+@@ -217,10 +215,6 @@ static NTSTATUS dcesrv_netr_ServerAuthenticate3_helper(
+ 
+ 	negotiate_flags = *r->in.negotiate_flags & server_flags;
+ 
+-	if (negotiate_flags & NETLOGON_NEG_AUTHENTICATED_RPC) {
+-		reject_none_rpc = false;
+-	}
+-
+ 	if (negotiate_flags & NETLOGON_NEG_STRONG_KEYS) {
+ 		reject_des_client = false;
+ 	}
+@@ -267,15 +261,6 @@ static NTSTATUS dcesrv_netr_ServerAuthenticate3_helper(
+ 	 */
+ 	*r->out.negotiate_flags = negotiate_flags;
+ 
+-	if (reject_none_rpc) {
+-		/* schannel must be used, but client did not offer it. */
+-		DEBUG(0,("%s: schannel required but client failed "
+-			"to offer it. Client was %s\n",
+-			 __func__,
+-			 log_escape(mem_ctx, r->in.account_name)));
+-		return NT_STATUS_ACCESS_DENIED;
+-	}
+-
+ 	switch (r->in.secure_channel_type) {
+ 	case SEC_CHAN_WKSTA:
+ 	case SEC_CHAN_DNS_DOMAIN:
+-- 
+2.17.1
+
+
