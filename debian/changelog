@@ -1,3 +1,9 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.19bb1) bionic; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 19 Sep 2020 04:27:14 +0200
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.19) bionic-security; urgency=medium
 
   * SECURITY UPDATE: Unauthenticated domain controller compromise by
