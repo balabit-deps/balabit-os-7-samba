@@ -1,0 +1,57 @@
+From 57a245c32038deeb0a48fe9c812f0edfc23ad225 Mon Sep 17 00:00:00 2001
+From: Stefan Metzmacher <metze@samba.org>
+Date: Wed, 16 Sep 2020 16:04:57 +0200
+Subject: [PATCH 05/22] CVE-2020-1472(ZeroLogon): libcli/auth: add
+ netlogon_creds_random_challenge()
+
+It's good to have just a single isolated function that will generate
+random challenges, in future we can add some logic in order to
+avoid weak values, which are likely to be rejected by a server.
+
+BUG: https://bugzilla.samba.org/show_bug.cgi?id=14497
+
+Signed-off-by: Stefan Metzmacher <metze@samba.org>
+---
+ libcli/auth/credentials.c | 8 ++++++++
+ libcli/auth/proto.h       | 2 ++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/libcli/auth/credentials.c b/libcli/auth/credentials.c
+index acf88c923aab..ca0be6966194 100644
+--- a/libcli/auth/credentials.c
++++ b/libcli/auth/credentials.c
+@@ -26,9 +26,17 @@
+ #include "libcli/auth/libcli_auth.h"
+ #include "../libcli/security/dom_sid.h"
+ 
++
++void netlogon_creds_random_challenge(struct netr_Credential *challenge)
++{
++	ZERO_STRUCTP(challenge);
++	generate_random_buffer(challenge->data, sizeof(challenge->data));
++}
++
+ static void netlogon_creds_step_crypt(struct netlogon_creds_CredentialState *creds,
+ 				      const struct netr_Credential *in,
+ 				      struct netr_Credential *out)
++
+ {
+ 	if (creds->negotiate_flags & NETLOGON_NEG_SUPPORTS_AES) {
+ 		AES_KEY key;
+diff --git a/libcli/auth/proto.h b/libcli/auth/proto.h
+index 82febe74440a..82797d453ed6 100644
+--- a/libcli/auth/proto.h
++++ b/libcli/auth/proto.h
+@@ -11,6 +11,8 @@
+ 
+ /* The following definitions come from /home/jeremy/src/samba/git/master/source3/../source4/../libcli/auth/credentials.c  */
+ 
++void netlogon_creds_random_challenge(struct netr_Credential *challenge);
++
+ void netlogon_creds_des_encrypt_LMKey(struct netlogon_creds_CredentialState *creds, struct netr_LMSessionKey *key);
+ void netlogon_creds_des_decrypt_LMKey(struct netlogon_creds_CredentialState *creds, struct netr_LMSessionKey *key);
+ void netlogon_creds_des_encrypt(struct netlogon_creds_CredentialState *creds, struct samr_Password *pass);
+-- 
+2.17.1
+
+

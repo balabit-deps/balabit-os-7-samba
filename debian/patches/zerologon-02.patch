@@ -1,0 +1,58 @@
+From 13d40d64aa4959fcb2d76afbdc31c0cdce695c75 Mon Sep 17 00:00:00 2001
+From: Stefan Metzmacher <metze@samba.org>
+Date: Mon, 27 May 2019 12:38:43 +0200
+Subject: [PATCH 02/22] s3:rpc_server:netlogon: don't require
+ NEG_AUTHENTICATED_RPC in netr_ServerAuthenticate*()
+
+The domain join with VMWare Horizon Quickprep seems to use
+netr_ServerAuthenticate3() with just the NEG_STRONG_KEYS
+(and in addition the NEG_SUPPORTS_AES) just to verify a password.
+
+Note: NETLOGON_NEG_SCHANNEL is an alias to NEG_AUTHENTICATED_RPC.
+
+BUG: https://bugzilla.samba.org/show_bug.cgi?id=13464 (maybe)
+BUG: https://bugzilla.samba.org/show_bug.cgi?id=13949
+
+Signed-off-by: Stefan Metzmacher <metze@samba.org>
+Reviewed-by: Andreas Schneider <asn@samba.org>
+(cherry picked from commit fa5215ce5b93fb032df341e718d7011e619f0916)
+(cherry picked from commit a47fd552e123690e3ca5ad95c06172d4ae64be07)
+---
+ source3/rpc_server/netlogon/srv_netlog_nt.c | 13 +------------
+ 1 file changed, 1 insertion(+), 12 deletions(-)
+
+diff --git a/source3/rpc_server/netlogon/srv_netlog_nt.c b/source3/rpc_server/netlogon/srv_netlog_nt.c
+index 83e68417c767..4f89e62adddf 100644
+--- a/source3/rpc_server/netlogon/srv_netlog_nt.c
++++ b/source3/rpc_server/netlogon/srv_netlog_nt.c
+@@ -926,7 +926,7 @@ NTSTATUS _netr_ServerAuthenticate3(struct pipes_struct *p,
+ 		srv_flgs |= NETLOGON_NEG_SUPPORTS_AES;
+ 	}
+ 
+-	if (lp_server_schannel() != false) {
++	if (in_neg_flags & NETLOGON_NEG_SCHANNEL) {
+ 		srv_flgs |= NETLOGON_NEG_SCHANNEL;
+ 	}
+ 
+@@ -967,17 +967,6 @@ NTSTATUS _netr_ServerAuthenticate3(struct pipes_struct *p,
+ 		goto out;
+ 	}
+ 
+-	if ( (lp_server_schannel() == true) &&
+-	     ((in_neg_flags & NETLOGON_NEG_SCHANNEL) == 0) ) {
+-
+-		/* schannel must be used, but client did not offer it. */
+-		DEBUG(0,("%s: schannel required but client failed "
+-			"to offer it. Client was %s\n",
+-			fn, r->in.account_name));
+-		status = NT_STATUS_ACCESS_DENIED;
+-		goto out;
+-	}
+-
+ 	status = get_md4pw(&mach_pwd,
+ 			   r->in.account_name,
+ 			   r->in.secure_channel_type,
+-- 
+2.17.1
+
+
