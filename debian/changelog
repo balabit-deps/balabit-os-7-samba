@@ -1,3 +1,9 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.21bb1) bionic; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 07 Nov 2020 04:28:44 +0100
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.21) bionic-security; urgency=medium
 
   * SECURITY UPDATE: Missing handle permissions check in ChangeNotify
