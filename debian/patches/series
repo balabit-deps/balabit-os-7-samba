@@ -118,3 +118,10 @@ zerologon-19.patch
 zerologon-20.patch
 zerologon-21.patch
 zerologon-22.patch
+CVE-2020-14318-1.patch
+CVE-2020-14318-2.patch
+CVE-2020-14323-1.patch
+CVE-2020-14323-2.patch
+CVE-2020-14383-1.patch
+CVE-2020-14383-2.patch
+CVE-2020-14383-3.patch
