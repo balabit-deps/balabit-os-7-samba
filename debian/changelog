@@ -1,3 +1,12 @@
+samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.23) bionic-security; urgency=medium
+
+  * SECURITY UPDATE: wrong group entries via negative idmap cache entries
+    - debian/patches/CVE-2021-20254.patch: Simplify sids_to_unixids() in
+      source3/passdb/lookup_sid.c.
+    - CVE-2021-20254
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 14 Apr 2021 08:52:57 -0400
+
 samba (2:4.7.6+dfsg~ubuntu-0ubuntu2.21bb1) bionic; urgency=medium
 
   * Balabit patched version
